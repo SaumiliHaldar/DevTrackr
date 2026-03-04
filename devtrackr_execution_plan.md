@@ -1,6 +1,6 @@
 # 🚀 DevTrackr: 4-Week Execution Plan
 
-Here is a structured, week-by-week roadmap to build the DevTrackr Developer Portfolio Analytics SaaS. It is designed to logically introduce you to the tech stack (Vite + React, TSX, Node.js API, Clerk, Prisma, TailwindCSS) while minimizing overwhelming jumps in difficulty.
+Here is a structured, week-by-week roadmap to build the DevTrackr Developer Portfolio Analytics SaaS. It is designed to logically introduce you to the tech stack (Vite + React, TSX, Python FastAPI, Clerk, Prisma, TailwindCSS) while minimizing overwhelming jumps in difficulty.
 
 ---
 
@@ -10,7 +10,7 @@ Here is a structured, week-by-week roadmap to build the DevTrackr Developer Port
 
 *   **Day 1: Project Setup & Vite (React + TSX)**
     *   Initialize the frontend project using `npm create vite@latest . -- --template react-ts`.
-    *   Initialize a separate Express or Fastify backend for your API routes.
+    *   Initialize a separate Python FastAPI backend for your API routes.
     *   Set up Tailwind CSS, formatting (Prettier, ESLint).
     *   Build a visually appealing but simple landing page showcasing the value prop ("Developer Analytics").
 *   **Day 2: Clerk Authentication Integration**
@@ -76,12 +76,12 @@ Here is a structured, week-by-week roadmap to build the DevTrackr Developer Port
     *   Query the user's weekly metrics, format them efficiently into a prompt: *"You are a senior tech lead. Based on this JSON data about a user's GitHub activity, generate 3 specific, encouraging insights about their productivity."*
     *   Save these insights into the `Insight` Prisma model and display them on the top of the dashboard.
 *   **Day 3: Simple Caching & Rate Limiting (Performance Hardening)**
-    *   Implement simple in-memory caching (e.g., `node-cache`) to keep dashboard queries snappy without needing Redis.
-    *   Implement rate limiting on the API routes (e.g., `express-rate-limit`) to avoid abuse on expensive AI or GitHub API calls.
+    *   Implement simple in-memory caching (e.g., `fastapi-cache` or `dogpile.cache`) to keep dashboard queries snappy without needing Redis.
+    *   Implement rate limiting on the API routes (e.g., `slowapi`) to avoid abuse on expensive AI or GitHub API calls.
 *   **Day 4: Deployment (PaaS Approach)**
     *   Rely on managed services to avoid manual containerization.
     *   Deploy the PostgreSQL instance (e.g., Supabase/Railway).
-    *   Deploy the Vite + React frontend to Vercel/Netlify, and the Node.js API backend to Render/Railway.
+    *   Deploy the Vite + React frontend to Vercel/Netlify, and the Python FastAPI backend to Render/Railway or Heroku.
 *   **Day 5: Final Polish for CV & Portfolios**
     *   Fill the `README.md` with beautiful screenshots, setup instructions, and architecture diagrams.
     *   Write the CV blurb highlighting *what* you achieved and *how* you built the data aggregation architecture.
