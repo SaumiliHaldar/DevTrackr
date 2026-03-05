@@ -158,10 +158,23 @@ class GitHubClient:
         }
 
     async def get_repositories(self):
+        """Fetch ALL repos across all pages — no artificial limits."""
+        all_repos = []
+        page = 1
         async with httpx.AsyncClient() as client:
-            response = await client.get(f"{self.base_url}/user/repos?sort=updated&per_page=30", headers=self.headers)
-            response.raise_for_status()
-            return response.json()
+            while True:
+                response = await client.get(
+                    f"{self.base_url}/user/repos?sort=updated&per_page=100&page={page}",
+                    headers=self.headers
+                )
+                response.raise_for_status()
+                batch = response.json()
+                all_repos.extend(batch)
+                # GitHub returns fewer than 100 results on the last page
+                if len(batch) < 100:
+                    break
+                page += 1
+        return all_repos
 
     async def get_commits(self, owner: str, repo_name: str, since: str = None):
         url = f"{self.base_url}/repos/{owner}/{repo_name}/commits?per_page=50"
@@ -206,7 +219,7 @@ async def get_github_token(clerk_user_id: str):
 
 
 # GitHub Sync Route
-# Each user gets exactly ONE row in UserRepository, UserCommit, and UserPullRequest.
+# Each user gets exactly ONE row in Repository, Commit, and PullRequest.
 # Every sync replaces the JSON arrays in those rows with the latest fetched data.
 @app.post("/sync-github")
 @limiter.limit("2/minute")
@@ -218,9 +231,8 @@ async def sync_github_data(request: Request, clerk_user_id: str):
     if not user:
         raise HTTPException(status_code=404, detail="User not found in database")
 
-    # Fetch all repos (up to 30 most recently updated)
+    # Fetch all repos (up to 100 most recently updated)
     raw_repos = await gh.get_repositories()
-    raw_repos = raw_repos[:15]  # Limit to top 15 for speed
 
     # Build JSON arrays for each table
     repos_list = []
@@ -355,6 +367,10 @@ async def get_user_stats(clerk_user_id: str):
     merged_prs = sum(1 for pr in prs if pr.get("mergedAt"))
     pr_merge_rate = round((merged_prs / total_prs) * 100, 1) if total_prs > 0 else 0
 
+    # Productivity score (0-100)
+    # Weighting: Commits (0.5 pts), Merged PRs (5 pts), Repos (2 pts)
+    productivity_score = min(100, (len(commits) * 0.5) + (merged_prs * 5) + (len(repos) * 2))
+
     return {
         "total_commits": len(commits),
         "total_repos": len(repos),
@@ -362,6 +378,7 @@ async def get_user_stats(clerk_user_id: str):
         "merged_prs": merged_prs,
         "pr_merge_rate": pr_merge_rate,
         "languages": languages,
+        "productivity_score": round(productivity_score, 1)
     }
 
 
@@ -442,7 +459,7 @@ async def get_repos(clerk_user_id: Optional[str] = None):
 # AI Insight Generation
 @app.post("/generate-insight")
 @limiter.limit("3/minute")
-async def generate_insights(request: Request, clerk_user_id: str):
+async def generate_insights(request: Request, clerk_user_id: str, force_refresh: bool = False):
     user = await db.user.find_unique(where={'clerkId': clerk_user_id})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -459,6 +476,21 @@ async def generate_insights(request: Request, clerk_user_id: str):
         c for c in commits
         if datetime.strptime(c['date'][:10], '%Y-%m-%d') >= thirty_days_ago
     ]
+
+    # Caching logic: check if we have a recent insight (last 24 hours)
+    if not force_refresh:
+        latest_insight = await db.insight.find_first(
+            where={'userId': user.id},
+            order={'createdAt': 'desc'}
+        )
+        if latest_insight:
+            time_diff = datetime.now() - latest_insight.createdAt.replace(tzinfo=None)
+            if time_diff < timedelta(days=7):
+                return {
+                    "insight": latest_insight.content, 
+                    "cached": True,
+                    "cached_at": latest_insight.createdAt.isoformat()
+                }
 
     if not GEMINI_API_KEY:
         content = "AI Insights not configured. Set GEMINI_API_KEY in backend .env to generate live neural analysis."
@@ -477,8 +509,13 @@ async def generate_insights(request: Request, clerk_user_id: str):
         model = genai.GenerativeModel('gemini-2.5-flash')
         response = model.generate_content(prompt)
         content = response.text.replace("\n", " ").strip()
+        
+        # Replace the old record (Maintain only one latest report per user)
+        # We do this by deleting any existing insights for the user first
+        await db.insight.delete_many(where={'userId': user.id})
         await db.insight.create(data={'content': content, 'userId': user.id})
-        return {"insight": content}
+        
+        return {"insight": content, "cached": False}
     except Exception as e:
         print(f"Error generating insight: {e}")
         return {"insight": "Live delta streams detected. Neural analysis temporarily offline."}

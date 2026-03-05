@@ -29,7 +29,7 @@ model User {
   repositories Repository?
   commits      Commit?
   pullRequests PullRequest?
-  insights     Insight[]
+  insights     Insight?
 }
 
 // Each user has exactly ONE row here.
@@ -68,7 +68,7 @@ model PullRequest {
 model Insight {
   id        String   @id @default(cuid())
   content   String
-  userId    String
+  userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 }

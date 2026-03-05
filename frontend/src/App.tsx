@@ -17,103 +17,122 @@ const LandingPage: React.FC = () => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
+      transition: { staggerChildren: 0.08 }
     }
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 24, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
       transition: {
         type: "spring" as const,
-        stiffness: 100,
-        damping: 20
+        stiffness: 90,
+        damping: 22
       }
     }
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-black/10">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Navigation */}
       <motion.nav 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-black/5"
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+        className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-sm border-b border-black/8"
       >
-        <div className="max-w-6xl mx-auto px-6 md:px-10 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
             <motion.div 
               whileHover={{ rotate: 90 }}
-              className="w-5 h-5 bg-black text-white flex items-center justify-center font-bold text-[10px] shrink-0"
+              transition={{ duration: 0.2 }}
+              className="w-6 h-6 bg-black text-white flex items-center justify-center font-black text-xs shrink-0"
             >
               D
             </motion.div>
             <span className="text-sm font-black tracking-tight uppercase">DevTrackr</span>
-          </div>
+          </Link>
 
-          <div className="hidden md:flex items-center gap-8 text-[9px] uppercase tracking-[0.2em] font-black text-muted-foreground">
-            {['Features', 'Analytics', 'AI Insights'].map((item) => (
-              <motion.a 
-                key={item}
-                href={`#${item.toLowerCase().replace(' ', '')}`}
-                whileHover={{ y: -2, color: '#000' }}
-                className="transition-colors"
-              >
-                {item}
-              </motion.a>
-            ))}
-            
-            <SignedOut>
-              <SignInButton mode="modal">
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-5 py-2 border border-black text-black hover:bg-black hover:text-white transition-all uppercase tracking-widest text-[9px] font-black"
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-8">
+            <div className="flex items-center gap-6 text-xs uppercase tracking-widest font-bold text-muted-foreground">
+              {['Features', 'Analytics', 'AI Insights'].map((item) => (
+                <motion.a 
+                  key={item}
+                  href={`#${item.toLowerCase().replace(' ', '')}`}
+                  whileHover={{ color: '#000' }}
+                  className="transition-colors"
                 >
-                  Login
-                </motion.button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <Link to="/dashboard" className="text-black hover:underline underline-offset-4 font-black">Dashboard</Link>
-              <UserButton afterSignOutUrl="/" />
-            </SignedIn>
+                  {item}
+                </motion.a>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-4">
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <motion.button 
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="px-5 py-2 border border-black text-black hover:bg-black hover:text-white transition-all text-xs font-black uppercase tracking-widest"
+                  >
+                    Sign In
+                  </motion.button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <Link to="/dashboard" className="text-xs font-black uppercase tracking-widest text-black border border-black px-5 py-2 hover:bg-black hover:text-white transition-all">Dashboard</Link>
+                <UserButton afterSignOutUrl="/" />
+              </SignedIn>
+            </div>
           </div>
 
+          {/* Mobile Hamburger */}
           <button 
-            className="md:hidden p-2"
+            className="md:hidden p-2 -mr-1"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
           >
-            <motion.div animate={isMenuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }} className="w-5 h-0.5 bg-black mb-1"></motion.div>
-            <motion.div animate={isMenuOpen ? { opacity: 0 } : { opacity: 1 }} className="w-5 h-0.5 bg-black mb-1"></motion.div>
-            <motion.div animate={isMenuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }} className="w-5 h-0.5 bg-black"></motion.div>
+            <div className="w-5 flex flex-col gap-1">
+              <motion.span animate={isMenuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }} className="block w-5 h-0.5 bg-black origin-center" />
+              <motion.span animate={isMenuOpen ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }} className="block w-5 h-0.5 bg-black" />
+              <motion.span animate={isMenuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }} className="block w-5 h-0.5 bg-black origin-center" />
+            </div>
           </button>
         </div>
 
+        {/* Mobile Menu */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div 
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="md:hidden overflow-hidden bg-white border-b border-black/5"
+              transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+              className="md:hidden overflow-hidden bg-white border-t border-black/8"
             >
-              <div className="p-6 flex flex-col gap-6 text-[10px] uppercase tracking-widest font-black">
-                <a href="#features" onClick={() => setIsMenuOpen(false)}>Features</a>
-                <a href="#analytics" onClick={() => setIsMenuOpen(false)}>Analytics</a>
-                <a href="#ai" onClick={() => setIsMenuOpen(false)}>AI Insights</a>
-                <div className="pt-4 border-t border-black/5 flex items-center justify-between">
+              <div className="px-5 py-5 flex flex-col gap-4">
+                {['Features', 'Analytics', 'AI Insights'].map((item) => (
+                  <a 
+                    key={item}
+                    href={`#${item.toLowerCase().replace(' ', '')}`}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-sm font-bold uppercase tracking-widest text-muted-foreground hover:text-black transition-colors py-1"
+                  >
+                    {item}
+                  </a>
+                ))}
+                <div className="pt-4 border-t border-black/8 flex items-center justify-between">
                   <SignedOut>
                     <SignInButton mode="modal">
-                      <button className="text-black">Login</button>
+                      <button className="text-sm font-black uppercase tracking-widest text-black">Sign In →</button>
                     </SignInButton>
                   </SignedOut>
                   <SignedIn>
-                    <Link to="/dashboard" className="text-black">Dashboard</Link>
+                    <Link to="/dashboard" className="text-sm font-black uppercase tracking-widest text-black">Dashboard</Link>
                     <UserButton afterSignOutUrl="/" />
                   </SignedIn>
                 </div>
@@ -123,109 +142,170 @@ const LandingPage: React.FC = () => {
         </AnimatePresence>
       </motion.nav>
 
-      <main className="pt-24 md:pt-32">
+      {/* Main Content */}
+      <main className="pt-16">
+        {/* Hero Section */}
         <motion.section 
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="px-6 md:px-10 max-w-6xl mx-auto mb-20 md:mb-32"
+          className="px-5 sm:px-8 max-w-6xl mx-auto pt-20 pb-24 md:pt-28 md:pb-32"
         >
-          <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <motion.div variants={itemVariants}>
-              <div className="inline-block border border-black/10 px-3 py-1 text-[7px] md:text-[8px] uppercase tracking-[0.4em] font-black mb-8 md:mb-12 opacity-50">
-                Data Aggregation v1.0
-              </div>
-              <h1 className="text-4xl md:text-7xl font-black tracking-tightest mb-6 md:mb-8 leading-[0.85] uppercase lg:-ml-1">
-                Visualizing <br className="hidden md:block" />
+
+              <motion.h1 
+                variants={itemVariants}
+                className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[0.88] uppercase mb-7"
+              >
+                Visualizing<br />
                 Raw Talent.
-              </h1>
-              <p className="max-w-sm text-muted-foreground text-[10px] md:text-sm mb-10 md:mb-12 leading-relaxed uppercase tracking-wider">
+              </motion.h1>
+
+              <motion.p 
+                variants={itemVariants}
+                className="text-base text-muted-foreground mb-10 leading-relaxed max-w-sm"
+              >
                 Transforming GitHub activity into high-contrast analytics. 
                 Deterministic metrics for the precise engineer.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              </motion.p>
+
+              <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3">
                 <SignedOut>
                   <SignInButton mode="modal">
                     <motion.button 
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={{ scale: 1.02, backgroundColor: '#111' }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full sm:w-auto px-8 py-4 bg-black text-white font-black uppercase text-[10px] tracking-[0.2em] hover:bg-black/90 transition-all text-center"
+                      className="px-7 py-3.5 bg-black text-white font-black uppercase text-xs tracking-widest hover:bg-black/90 transition-all"
                     >
-                      Sync Profile
+                      Sync Profile →
                     </motion.button>
                   </SignInButton>
                 </SignedOut>
                 <SignedIn>
-                  <Link to="/dashboard" className="w-full sm:w-auto px-8 py-4 bg-black text-white font-black uppercase text-[10px] tracking-[0.2em] hover:bg-black/90 transition-all text-center">
-                    Go to Dashboard
+                  <Link to="/dashboard" className="px-7 py-3.5 bg-black text-white font-black uppercase text-xs tracking-widest hover:bg-black/90 transition-all text-center">
+                    Go to Dashboard →
                   </Link>
                 </SignedIn>
-                <motion.button 
-                  whileHover={{ backgroundColor: 'rgba(0,0,0,0.05)' }}
-                  className="w-full sm:w-auto px-8 py-4 border border-black/10 text-black font-black uppercase text-[10px] tracking-[0.2em] transition-all"
+                <motion.a 
+                  href="https://github.com/SaumiliHaldar/DevTrackr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ backgroundColor: 'rgba(0,0,0,0.04)' }}
+                  className="px-7 py-3.5 border border-black/15 text-black font-bold uppercase text-xs tracking-widest transition-all inline-block"
                 >
                   Documentation
-                </motion.button>
-              </div>
+                </motion.a>
+              </motion.div>
             </motion.div>
 
+            {/* Hero Graphic */}
             <motion.div 
               variants={itemVariants}
               className="relative hidden lg:block"
             >
-              <div className="aspect-square border border-black/5 p-6 bg-[#fafafa]">
-                 <div className="w-full h-full border border-black/10 flex flex-col bg-white overflow-hidden">
-                  <div className="h-10 border-b border-black/10 px-4 flex items-center justify-between">
+              <div className="aspect-square border border-black/8 p-5 bg-zinc-50">
+                <div className="w-full h-full border border-black/10 flex flex-col bg-white overflow-hidden">
+                  <div className="h-10 border-b border-black/8 px-4 flex items-center justify-between shrink-0">
                     <div className="flex gap-1.5">
-                      {[1, 2, 3].map(i => <div key={i} className="w-1.5 h-1.5 bg-black/10"></div>)}
+                      {[1, 2, 3].map(i => <div key={i} className="w-2 h-2 bg-black/10 rounded-full" />)}
                     </div>
-                    <div className="text-[8px] font-black tracking-[0.3em] text-black/30 flex items-center gap-2">
-                       <span className="w-2 h-2 rounded-full border border-black/20 animate-pulse"></span>
-                       LIVE_STREAM
+                    <div className="text-xs font-bold tracking-widest text-black/30 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-black/30 animate-pulse" />
+                      LIVE
                     </div>
                   </div>
-                  <div className="flex-1 p-6 grid grid-cols-12 gap-4">
+                  <div className="flex-1 p-5 flex flex-col gap-3">
                     <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: '100%' }}
-                      transition={{ delay: 1, duration: 1.5 }}
-                      className="col-span-12 border border-black/5 h-20 p-4 flex flex-col justify-between"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.8 }}
+                      className="border border-black/8 p-4 flex flex-col gap-2"
                     >
-                       <div className="w-8 h-1 bg-black/10"></div>
-                       <div className="w-full h-1 bg-black/5"></div>
-                       <div className="w-full h-1 bg-black/5"></div>
+                      <div className="w-10 h-1.5 bg-black/15 rounded-full" />
+                      <div className="w-full h-1 bg-black/6 rounded-full" />
+                      <div className="w-4/5 h-1 bg-black/6 rounded-full" />
                     </motion.div>
-                    <motion.div 
-                      initial={{ scaleY: 0 }}
-                      animate={{ scaleY: 1 }}
-                      transition={{ delay: 1.5, duration: 1 }}
-                      className="col-span-8 border border-black/5 h-32 origin-bottom"
-                    ></motion.div>
-                    <motion.div 
-                      initial={{ scaleY: 0 }}
-                      animate={{ scaleY: 1 }}
-                      transition={{ delay: 1.8, duration: 1 }}
-                      className="col-span-4 border border-black/5 h-32 origin-bottom"
-                    ></motion.div>
+                    <div className="flex gap-3 flex-1">
+                      <motion.div 
+                        initial={{ scaleY: 0 }}
+                        animate={{ scaleY: 1 }}
+                        transition={{ delay: 1.2, duration: 0.8 }}
+                        className="flex-1 border border-black/8 origin-bottom"
+                      />
+                      <motion.div 
+                        initial={{ scaleY: 0 }}
+                        animate={{ scaleY: 1 }}
+                        transition={{ delay: 1.5, duration: 0.8 }}
+                        className="w-16 border border-black/8 origin-bottom bg-black/3"
+                      />
+                    </div>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 2 }}
+                      className="flex gap-2"
+                    >
+                      {[65, 82, 47, 91, 73, 58].map((h, i) => (
+                        <div key={i} className="flex-1 bg-black/80" style={{ height: `${h * 0.4}px` }} />
+                      ))}
+                    </motion.div>
                   </div>
                 </div>
               </div>
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 2 }}
-                className="absolute -bottom-4 -left-4 w-24 h-24 border-b border-l border-black/10"
-              ></motion.div>
+                transition={{ delay: 2.2 }}
+                className="absolute -bottom-3 -left-3 w-20 h-20 border-b-2 border-l-2 border-black/15"
+              />
             </motion.div>
           </div>
         </motion.section>
 
-        <section id="features" className="py-20 md:py-24 px-6 md:px-10 max-w-6xl mx-auto border-t border-black/5">
-          <div className="grid md:grid-cols-3 gap-0 border border-black/5">
+        {/* Stats Bar */}
+        <section className="border-y border-black/8 bg-zinc-50">
+          <div className="max-w-6xl mx-auto px-5 sm:px-8 py-6">
+            <div className="flex flex-col sm:flex-row items-center justify-around gap-6 sm:gap-0">
+              {[
+                { label: 'Repositories Tracked', value: '10K+' },
+                { label: 'Commits Analyzed', value: '2M+' },
+                { label: 'Engineers Onboard', value: '500+' },
+              ].map((stat, i) => (
+                <React.Fragment key={stat.label}>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="text-center"
+                  >
+                    <div className="text-2xl font-black tracking-tight">{stat.value}</div>
+                    <div className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mt-0.5">{stat.label}</div>
+                  </motion.div>
+                  {i < 2 && <div className="hidden sm:block w-px h-8 bg-black/10" />}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section id="features" className="py-20 md:py-28 px-5 sm:px-8 max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-12"
+          >
+            <p className="text-xs uppercase tracking-widest font-bold text-muted-foreground mb-3">What We Do</p>
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight">Core Capabilities</h2>
+          </motion.div>
+          <div className="grid md:grid-cols-3 border border-black/10">
             {[
-              { id: '01', title: 'Features', head: 'Commit Sync', desc: 'Real-time ingestion of repository metadata. High fidelity tracking of every delta.' },
-              { id: '02', title: 'Analytics', head: 'Productivity', desc: 'Deterministic scoring algorithms. No fluff, just performance data.' },
-              { id: '03', title: 'Logic', head: 'Tech Stack', desc: 'Deep analysis of your technological footprint across various ecosystems.' }
+              { id: '01', title: 'Features', head: 'Commit Sync', desc: 'Real-time ingestion of repository metadata. High fidelity tracking of every delta and change across your entire codebase.' },
+              { id: '02', title: 'Analytics', head: 'Productivity', desc: 'Deterministic scoring algorithms with zero fluff. Pure performance data and velocity metrics for serious engineers.' },
+              { id: '03', title: 'Logic', head: 'Tech Stack', desc: 'Deep analysis of your technological footprint across ecosystems — language usage, framework distribution, and more.' }
             ].map((f, i) => (
               <motion.div 
                 key={f.id}
@@ -234,11 +314,11 @@ const LandingPage: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className={`p-8 md:p-10 border-black/5 group ${i < 2 ? 'border-b md:border-b-0 md:border-r' : ''}`}
+                className={`p-8 md:p-10 group ${i < 2 ? 'border-b md:border-b-0 md:border-r border-black/10' : ''}`}
               >
-                <span className="text-[8px] text-black/30 tracking-[0.4em] font-black block mb-8 md:mb-10 uppercase">{f.id}. {f.title}</span>
+                <span className="text-xs text-black/35 tracking-widest font-bold block mb-8 uppercase">{f.id}. {f.title}</span>
                 <h3 className="text-xl font-black uppercase tracking-tight mb-4 group-hover:translate-x-1 transition-transform">{f.head}</h3>
-                <p className="text-[10px] text-muted-foreground leading-relaxed uppercase tracking-widest font-medium">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {f.desc}
                 </p>
               </motion.div>
@@ -246,47 +326,68 @@ const LandingPage: React.FC = () => {
           </div>
         </section>
 
-        <section className="py-20 md:py-32 px-6 md:px-10 max-w-6xl mx-auto text-center border-t border-black/5">
-             <motion.h2 
-               initial={{ scale: 0.9, opacity: 0 }}
-               whileInView={{ scale: 1, opacity: 1 }}
-               viewport={{ once: true }}
-               className="text-3xl md:text-5xl font-black uppercase tracking-tightest mb-8"
-             >
-               Ready to Analyze?
-             </motion.h2>
-             <SignedOut>
-                <SignInButton mode="modal">
-                  <motion.button 
-                    whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.1)" }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-full sm:w-auto px-10 md:px-12 py-5 bg-black text-white font-black uppercase text-[10px] tracking-[0.3em] transition-all"
-                  >
-                    Initialize Core Engine
-                  </motion.button>
-                </SignInButton>
-             </SignedOut>
-             <SignedIn>
-                <Link to="/dashboard" className="w-full sm:w-auto px-10 md:px-12 py-5 bg-black text-white font-black uppercase text-[10px] tracking-[0.3em] hover:scale-105 transition-all shadow-2xl shadow-black/20 inline-block text-center">
-                    Access Dashboard
-                </Link>
-             </SignedIn>
+        {/* CTA Section */}
+        <section className="py-20 md:py-28 px-5 sm:px-8 max-w-6xl mx-auto text-center border-t border-black/8">
+          <motion.p 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-xs uppercase tracking-widest font-bold text-muted-foreground mb-4"
+          >
+            Get Started
+          </motion.p>
+          <motion.h2 
+            initial={{ scale: 0.95, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-8"
+          >
+            Ready to Analyze?
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-base text-muted-foreground mb-10 max-w-sm mx-auto leading-relaxed"
+          >
+            Connect your GitHub account and get instant insights into your development patterns.
+          </motion.p>
+          <SignedOut>
+            <SignInButton mode="modal">
+              <motion.button 
+                whileHover={{ scale: 1.04, boxShadow: "0 16px 36px rgba(0,0,0,0.12)" }}
+                whileTap={{ scale: 0.97 }}
+                className="px-10 py-4 bg-black text-white font-black uppercase text-xs tracking-widest transition-all"
+              >
+                Initialize Core Engine
+              </motion.button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <Link to="/dashboard" className="inline-block px-10 py-4 bg-black text-white font-black uppercase text-xs tracking-widest hover:bg-black/90 transition-all">
+              Access Dashboard
+            </Link>
+          </SignedIn>
         </section>
       </main>
 
-      <footer className="py-12 md:py-16 border-t border-black/5 px-6 md:px-10 bg-white">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-black"></div>
-            <span className="text-xs font-black tracking-tighter uppercase">DevTrackr</span>
-          </div>
-          <div className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] font-bold text-muted-foreground">
+      {/* Footer */}
+      <footer className="border-t border-black/8 bg-white">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-8 grid grid-cols-1 md:grid-cols-3 items-center gap-6">
+          {/* Logo — left */}
+          <Link to="/" className="flex items-center gap-2.5 justify-center md:justify-start hover:opacity-80 transition-opacity">
+            <div className="w-5 h-5 bg-black text-white flex items-center justify-center font-black text-xs shrink-0">D</div>
+            <span className="text-sm font-black tracking-tight uppercase">DevTrackr</span>
+          </Link>
+          {/* Tagline — center */}
+          <p className="text-xs uppercase tracking-widest font-semibold text-muted-foreground text-center">
             All code remains yours.
-          </div>
-          <div className="flex gap-8 text-[9px] uppercase tracking-[0.2em] font-black">
-            <a href="mailto:haldar.saumili843@gmail.com" className="hover:text-black transition-colors">Email</a>
-            <a href="https://github.com/SaumiliHaldar" className="hover:text-black transition-colors">GitHub</a>
-            <span className="text-black/20">© 2026</span>
+          </p>
+          {/* Links — right */}
+          <div className="flex items-center gap-6 text-xs uppercase tracking-widest font-bold justify-center md:justify-end">
+            <a href="mailto:haldar.saumili843@gmail.com" className="text-muted-foreground hover:text-black transition-colors">Email</a>
+            <a href="https://github.com/SaumiliHaldar" className="text-muted-foreground hover:text-black transition-colors">GitHub</a>
+            <span className="text-black/25">© {new Date().getFullYear()}</span>
           </div>
         </div>
       </footer>
