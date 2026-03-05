@@ -7,7 +7,7 @@ import Overview from './Overview';
 import Repositories from './Repositories';
 import Analytics from './Analytics';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
 
 interface UserStats {
   total_commits: number;

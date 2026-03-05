@@ -61,7 +61,7 @@ const LandingPage: React.FC = () => {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             <div className="flex items-center gap-6 text-xs uppercase tracking-widest font-bold text-muted-foreground">
-              {['Features', 'Analytics', 'AI Insights'].map((item) => (
+              {['Features', 'AI Insights'].map((item) => (
                 <motion.a 
                   key={item}
                   href={`#${item.toLowerCase().replace(' ', '')}`}
@@ -117,7 +117,7 @@ const LandingPage: React.FC = () => {
               className="md:hidden overflow-hidden bg-white border-t border-black/8"
             >
               <div className="px-5 py-5 flex flex-col gap-4">
-                {['Features', 'Analytics', 'AI Insights'].map((item) => (
+                {['Features', 'AI Insights'].map((item) => (
                   <a 
                     key={item}
                     href={`#${item.toLowerCase().replace(' ', '')}`}
@@ -272,6 +272,64 @@ const LandingPage: React.FC = () => {
                 </p>
               </motion.div>
             ))}
+          </div>
+        </section>
+
+        {/* AI Insights Section */}
+        <section id="aiinsights" className="py-20 md:py-28 px-5 sm:px-8 max-w-6xl mx-auto border-t border-black/8">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-12"
+          >
+            <p className="text-xs uppercase tracking-widest font-bold text-muted-foreground mb-3">Intelligence</p>
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight">AI Insights</h2>
+          </motion.div>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <h3 className="text-2xl font-black uppercase tracking-tight mb-4">Deep Codebase Analysis</h3>
+              <p className="text-base text-muted-foreground leading-relaxed mb-6">
+                Our advanced AI engine processes your commit history, language distribution, and PR merge rates to generate personalized insights. Identify bottlenecks, discover your strongest technologies, and optimize your productivity.
+              </p>
+              <ul className="space-y-4">
+                {[
+                  'Automated pattern recognition',
+                  'Actionable performance feedback',
+                  'Tech stack proficiency scoring'
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <div className="w-1.5 h-1.5 bg-black" />
+                    <span className="text-sm font-bold uppercase tracking-widest">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="bg-black text-white p-8 md:p-12 relative overflow-hidden"
+            >
+               <div className="relative z-10">
+                 <div className="flex items-center gap-2 mb-6">
+                   <div className="w-2 h-2 bg-white rounded-full" />
+                   <h4 className="text-xs font-black tracking-widest uppercase text-white">Live Insight Example</h4>
+                 </div>
+                 <p className="text-sm leading-relaxed text-white/85">
+                   "Based on your recent activity, your productivity in TypeScript has increased by 40%. Consider mentoring junior developers in React patterns, as your PR merge rate is exceptionally high in this area."
+                 </p>
+               </div>
+               <motion.div 
+                 animate={{ rotate: 360 }}
+                 transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+                 className="absolute -bottom-10 -right-10 w-32 h-32 border-2 border-white/10 rounded-full pointer-events-none"
+               />
+            </motion.div>
           </div>
         </section>
 

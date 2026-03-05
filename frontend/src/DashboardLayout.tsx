@@ -73,7 +73,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         
         {/* Navigation */}
         <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-semibold px-3 mb-2 mt-1">Navigation</p>
+          
           {NAV_LINKS.map((link) => (
             <NavLink 
               key={link.to}

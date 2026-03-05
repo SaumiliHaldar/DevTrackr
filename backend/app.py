@@ -414,6 +414,40 @@ async def get_user_activity(clerk_user_id: str):
     return sorted_activity
 
 
+# Repository-specific Activity (last 30 days commit heatmap)
+@app.get("/activity/{clerk_user_id}/{repo_name:path}")
+@cache(expire=300)
+async def get_repo_activity(clerk_user_id: str, repo_name: str):
+    user = await db.user.find_unique(where={'clerkId': clerk_user_id})
+    if not user:
+        return []
+
+    commit_row = await db.commit.find_unique(where={'userId': user.id})
+    commits = commit_row.commitsData if commit_row else []
+
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+
+    # Build a daily count map
+    activity_map = {}
+    for i in range(30):
+        date_str = (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d')
+        activity_map[date_str] = 0
+
+    for commit in commits:
+        try:
+            # Filter commits by repository name
+            if commit.get('repoName') == repo_name or commit.get('repoFullName') == repo_name:
+                commit_date_str = commit['date'][:10]  # YYYY-MM-DD
+                commit_date = datetime.strptime(commit_date_str, '%Y-%m-%d')
+                if commit_date >= thirty_days_ago and commit_date_str in activity_map:
+                    activity_map[commit_date_str] += 1
+        except Exception:
+            pass
+
+    sorted_activity = [activity_map[date] for date in sorted(activity_map.keys())]
+    return sorted_activity
+
+
 @app.post("/sync-user")
 async def sync_user(user: UserCreate):
     return await db.user.upsert(
@@ -519,6 +553,51 @@ async def generate_insights(request: Request, clerk_user_id: str, force_refresh:
     except Exception as e:
         print(f"Error generating insight: {e}")
         return {"insight": "Live delta streams detected. Neural analysis temporarily offline."}
+
+
+# Repo-Specific AI Insight Generation (Returns on-the-fly analysis)
+@app.post("/generate-repo-insight")
+@limiter.limit("5/minute")
+async def generate_repo_insights(request: Request, clerk_user_id: str, repo_name: str):
+    user = await db.user.find_unique(where={'clerkId': clerk_user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not GEMINI_API_KEY:
+        return {"insight": "AI Insights not configured. Set GEMINI_API_KEY in backend .env to enable analysis."}
+
+    commit_row = await db.commit.find_unique(where={'userId': user.id})
+    commits = commit_row.commitsData if commit_row else []
+
+    # Filter last 30 days for this specific repo
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+    repo_commits = [
+        c for c in commits
+        if (c.get('repoName') == repo_name or c.get('repoFullName') == repo_name)
+    ]
+    
+    recent_commits = [
+        c for c in repo_commits
+        if datetime.strptime(c['date'][:10], '%Y-%m-%d') >= thirty_days_ago
+    ]
+
+    dev_name = user.name if user.name else "this developer"
+    
+    prompt = (
+        f"Write a very brief, concise, and professional 2-3 sentence insight about {dev_name}'s recent work on the repository '{repo_name}'. "
+        f"They made {len(recent_commits)} commits in the last 30 days out of {len(repo_commits)} total commits. "
+        f"Speak directly to the data. Keep it highly analytical, encouraging, and sound like a senior engineer reviewing their specific repository contribution. "
+        f"Do not start with their name. No robotic or overly flowery language."
+    )
+
+    try:
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        response = model.generate_content(prompt)
+        content = response.text.replace("\n", " ").strip()
+        return {"insight": content}
+    except Exception as e:
+        print(f"Error generating repo insight: {e}")
+        return {"insight": "Unable to generate insight at this time. Delta stream offline."}
 
 
 @app.get("/insight/{clerk_user_id}")
