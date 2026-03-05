@@ -9,8 +9,10 @@ import {
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Dashboard from './Dashboard';
+import InteractiveHero from './InteractiveHero';
 
 const LandingPage: React.FC = () => {
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const containerVariants = {
@@ -204,62 +206,9 @@ const LandingPage: React.FC = () => {
               variants={itemVariants}
               className="relative hidden lg:block"
             >
-              <div className="aspect-square border border-black/8 p-5 bg-zinc-50">
-                <div className="w-full h-full border border-black/10 flex flex-col bg-white overflow-hidden">
-                  <div className="h-10 border-b border-black/8 px-4 flex items-center justify-between shrink-0">
-                    <div className="flex gap-1.5">
-                      {[1, 2, 3].map(i => <div key={i} className="w-2 h-2 bg-black/10 rounded-full" />)}
-                    </div>
-                    <div className="text-xs font-bold tracking-widest text-black/30 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-black/30 animate-pulse" />
-                      LIVE
-                    </div>
-                  </div>
-                  <div className="flex-1 p-5 flex flex-col gap-3">
-                    <motion.div 
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.8 }}
-                      className="border border-black/8 p-4 flex flex-col gap-2"
-                    >
-                      <div className="w-10 h-1.5 bg-black/15 rounded-full" />
-                      <div className="w-full h-1 bg-black/6 rounded-full" />
-                      <div className="w-4/5 h-1 bg-black/6 rounded-full" />
-                    </motion.div>
-                    <div className="flex gap-3 flex-1">
-                      <motion.div 
-                        initial={{ scaleY: 0 }}
-                        animate={{ scaleY: 1 }}
-                        transition={{ delay: 1.2, duration: 0.8 }}
-                        className="flex-1 border border-black/8 origin-bottom"
-                      />
-                      <motion.div 
-                        initial={{ scaleY: 0 }}
-                        animate={{ scaleY: 1 }}
-                        transition={{ delay: 1.5, duration: 0.8 }}
-                        className="w-16 border border-black/8 origin-bottom bg-black/3"
-                      />
-                    </div>
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 2 }}
-                      className="flex gap-2"
-                    >
-                      {[65, 82, 47, 91, 73, 58].map((h, i) => (
-                        <div key={i} className="flex-1 bg-black/80" style={{ height: `${h * 0.4}px` }} />
-                      ))}
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2.2 }}
-                className="absolute -bottom-3 -left-3 w-20 h-20 border-b-2 border-l-2 border-black/15"
-              />
+              <InteractiveHero />
             </motion.div>
+
           </div>
         </motion.section>
 
