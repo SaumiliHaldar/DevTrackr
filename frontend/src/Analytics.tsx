@@ -4,11 +4,22 @@ import type { Variants } from 'framer-motion';
 
 interface AnalyticsProps {
   activityData: number[];
+  insight: string | null;
+  isGeneratingInsight: boolean;
+  onGenerateInsight: () => void;
 }
 
-const Analytics: React.FC<AnalyticsProps> = ({ activityData }) => {
+const Analytics: React.FC<AnalyticsProps> = ({ activityData, insight, isGeneratingInsight, onGenerateInsight }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  
+  const generationAttempted = React.useRef(false);
+
+  React.useEffect(() => {
+    if (!insight && !isGeneratingInsight && !generationAttempted.current) {
+      generationAttempted.current = true;
+      onGenerateInsight();
+    }
+  }, [insight, isGeneratingInsight, onGenerateInsight]);
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -159,27 +170,30 @@ const Analytics: React.FC<AnalyticsProps> = ({ activityData }) => {
            <motion.div 
             variants={itemVariants}
             whileHover={{ y: -2 }}
+            onClick={!insight && !isGeneratingInsight ? onGenerateInsight : undefined}
             className="bg-black text-white p-6 md:p-8 overflow-hidden relative group cursor-pointer"
            >
-             <div className="relative z-10">
-                <h3 className="text-lg font-black tracking-tightest uppercase mb-3">Intelligence_Report</h3>
-                <AnimatePresence mode="wait">
-                  <motion.p 
-                    key={data.reduce((a, b) => a + b, 0)}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-[10px] uppercase tracking-widest opacity-60 leading-relaxed max-w-[200px]"
-                  >
-                    {data.reduce((a, b) => a + b, 0) > 0 
-                      ? "Live delta streams detected. Neural analysis suggests optimal efficiency levels."
-                      : "No recent activity detected. Connect repository core to begin deep scan."}
-                  </motion.p>
-                </AnimatePresence>
+             <div className="relative z-10 h-full flex flex-col">
+                <h3 className="text-lg font-black tracking-tightest uppercase mb-3 text-white shrink-0">Intelligence_Report</h3>
+                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                  <AnimatePresence mode="wait">
+                    <motion.p 
+                      key={insight || 'default'}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className={`text-[10px] uppercase tracking-widest leading-relaxed max-w-full ${insight ? 'opacity-90' : 'opacity-60'}`}
+                    >
+                      {isGeneratingInsight || !insight
+                         ? "Scanning delta streams..." 
+                         : insight}
+                    </motion.p>
+                  </AnimatePresence>
+                </div>
              </div>
              <motion.div 
                animate={{ rotate: 360 }}
                transition={{ repeat: Infinity, duration: 15, ease: "linear" }}
-               className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/5 rotate-12"
+               className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/5 rotate-12 pointer-events-none"
              ></motion.div>
            </motion.div>
         </motion.div>

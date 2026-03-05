@@ -14,70 +14,61 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Each user has exactly ONE row.
 model User {
-  id            String         @id @default(cuid())
-  clerkId       String         @unique
-  githubHandle  String?        @unique
-  email         String         @unique
-  name          String?
-  avatarUrl     String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  repositories  Repository[]
-  commits       Commit[]
-  pullRequests  PullRequest[]
-  insights      Insight[]
+  id           String       @id @default(cuid())
+  clerkId      String       @unique
+  githubHandle String?      @unique
+  email        String       @unique
+  name         String?
+  avatarUrl    String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // One-to-one relations — every user has one row in each of these tables
+  repositories Repository?
+  commits      Commit?
+  pullRequests PullRequest?
+  insights     Insight[]
 }
 
+// Each user has exactly ONE row here.
+// `repositoriesData` is a JSON array of all their repos.
+// e.g. [{ "githubId": 123, "name": "my-repo", "language": "Python", ... }, ...]
 model Repository {
-  id            String         @id @default(cuid())
-  githubId      Int            @unique
-  name          String
-  fullName      String
-  description   String?
-  language      String?
-  stargazersCount Int          @default(0)
-  forksCount    Int            @default(0)
-  userId        String
-  user          User           @relation(fields: [userId], references: [id])
-  commits       Commit[]
-  pullRequests  PullRequest[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id])
+  repositoriesData Json     @default("[]")
+  updatedAt        DateTime @updatedAt
 }
 
+// Each user has exactly ONE row here.
+// `commitsData` is a JSON array of all their commits across ALL repos.
+// e.g. [{ "sha": "abc", "message": "fix bug", "date": "...", "repoName": "my-repo", "additions": 5, "deletions": 2 }, ...]
 model Commit {
-  id            String         @id @default(cuid())
-  sha           String         @unique
-  message       String
-  date          DateTime
-  authorName    String?
-  authorEmail   String?
-  repositoryId  String
-  repository    Repository     @relation(fields: [repositoryId], references: [id])
-  userId        String
-  user          User           @relation(fields: [userId], references: [id])
-  additions     Int            @default(0)
-  deletions     Int            @default(0)
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  commitsData Json     @default("[]")
+  updatedAt   DateTime @updatedAt
 }
 
+// Each user has exactly ONE row here.
+// `pullRequestsData` is a JSON array of all their PRs across ALL repos.
+// e.g. [{ "githubId": 456, "title": "Add feature", "state": "merged", "repoName": "my-repo", ... }, ...]
 model PullRequest {
-  id            String         @id @default(cuid())
-  githubId      Int            @unique
-  number        Int
-  title         String
-  state         String
-  mergedAt      DateTime?
-  repositoryId  String
-  repository    Repository     @relation(fields: [repositoryId], references: [id])
-  userId        String
-  user          User           @relation(fields: [userId], references: [id])
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id])
+  pullRequestsData Json     @default("[]")
+  updatedAt        DateTime @updatedAt
 }
 
 model Insight {
-  id            String         @id @default(cuid())
-  content       String
-  userId        String
-  user          User           @relation(fields: [userId], references: [id])
-  createdAt     DateTime       @default(now())
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface OverviewProps {
   stats: {
@@ -14,6 +15,19 @@ interface OverviewProps {
 }
 
 const Overview: React.FC<OverviewProps> = ({ stats, repos, isSyncing, onSync }) => {
+  const getLanguageData = () => {
+    const counts: Record<string, number> = {};
+    repos.forEach(repo => {
+      if (repo.language) {
+        counts[repo.language] = (counts[repo.language] || 0) + 1;
+      }
+    });
+    return Object.entries(counts).map(([name, value]) => ({ name, value }));
+  };
+
+  const languageData = getLanguageData();
+  const COLORS = ['#000000', '#333333', '#666666', '#999999', '#CCCCCC'];
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -156,22 +170,34 @@ const Overview: React.FC<OverviewProps> = ({ stats, repos, isSyncing, onSync }) 
             ></motion.div>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="bg-white border border-black/5 p-6">
-            <span className="text-[8px] uppercase tracking-[0.4em] font-black text-muted-foreground block mb-6">Security Stream</span>
-            <div className="grid grid-cols-2 lg:grid-cols-1 gap-4">
-              {[...Array(3)].map((_, i) => (
-                <motion.div 
-                  key={i} 
-                  variants={itemVariants}
-                  className="flex gap-3"
-                >
-                  <div className="w-1 h-3 bg-black/10 mt-1"></div>
-                  <div>
-                    <div className="text-[10px] uppercase font-bold mb-0.5">Check {i+1}</div>
-                    <div className="text-[8px] text-muted-foreground uppercase">Stable</div>
-                  </div>
-                </motion.div>
-              ))}
+          <motion.div variants={itemVariants} className="bg-white border border-black/5 p-6 flex flex-col h-64">
+            <span className="text-[8px] uppercase tracking-[0.4em] font-black text-muted-foreground block mb-2">Tech Stack</span>
+            <div className="flex-1 relative min-h-0">
+              {languageData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={languageData}
+                      innerRadius={40}
+                      outerRadius={60}
+                      paddingAngle={2}
+                      dataKey="value"
+                      stroke="none"
+                    >
+                      {languageData.map((entry) => (
+                        <Cell key={`cell-${entry.name}`} fill={COLORS[languageData.indexOf(entry) % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#000', color: '#fff', fontSize: '10px', border: 'none', borderRadius: '0', textTransform: 'uppercase', fontWeight: 900 }}
+                      itemStyle={{ color: '#fff' }}
+                      cursor={false}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-[10px] text-muted-foreground uppercase opacity-50 font-black tracking-widest">No Data</div>
+              )}
             </div>
           </motion.div>
         </div>
