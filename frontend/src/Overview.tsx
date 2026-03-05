@@ -176,9 +176,18 @@ const Overview: React.FC<OverviewProps> = ({ stats, repos, isSyncing, isLoading 
                           </div>
                         </div>
                       </div>
-                      <svg className="w-4 h-4 text-black/20 shrink-0 group-hover:text-black/50 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
+                      <a 
+                        href={repo.htmlUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-black/20 shrink-0 group-hover:text-black/50 group-hover:translate-x-1 transition-all"
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={`View ${repo.name} on GitHub`}
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </a>
                     </motion.div>
                   )) : (
                     <motion.div variants={itemVariants} className="py-16 text-center">
@@ -211,9 +220,12 @@ const Overview: React.FC<OverviewProps> = ({ stats, repos, isSyncing, isLoading 
               <p className="text-xs uppercase tracking-wider opacity-50 leading-relaxed mb-6">
                 Deep-dive into your coding velocity and commit density across all repositories.
               </p>
-              <button className="text-xs font-bold uppercase tracking-widest underline underline-offset-4 decoration-white/25 hover:decoration-white transition-all">
+              <NavLink 
+                to="/dashboard/analytics"
+                className="text-xs font-bold uppercase tracking-widest underline underline-offset-4 decoration-white/25 hover:decoration-white transition-all inline-block"
+              >
                 View Details →
-              </button>
+              </NavLink>
             </div>
             <motion.div 
               animate={{ rotate: [0, 360] }}
