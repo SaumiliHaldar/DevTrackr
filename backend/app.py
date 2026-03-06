@@ -3,7 +3,6 @@ import os
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 from typing import Optional
-
 import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Request
@@ -24,6 +23,14 @@ load_dotenv()
 # Database initialization
 db = Prisma()
 
+# Rate limiting 
+def get_real_ip(request: Request) -> str:
+    """Extract real IP from Render's load balancer proxied headers."""
+    forwarded_for = request.headers.get("X-Forwarded-For")
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+    return get_remote_address(request)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Connect to the database on startup
@@ -34,7 +41,8 @@ async def lifespan(app: FastAPI):
     # Disconnect from the database on shutdown
     await db.disconnect()
 
-limiter = Limiter(key_func=get_remote_address)
+
+limiter = Limiter(key_func=get_real_ip)
 app = FastAPI(title="DevTrackr", lifespan=lifespan)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -47,9 +55,12 @@ if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
 
 # Configure CORS
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "")
+origins = [origin.strip() for origin in ALLOWED_ORIGINS.split(',')] if ALLOWED_ORIGINS else []
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust in production
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -95,25 +106,23 @@ async def clerk_webhook(
     x_svix_timestamp: str = Header(None)
 ):
     if not CLERK_WEBHOOK_SECRET:
-        print("WARNING: CLERK_WEBHOOK_SECRET not set. Skipping verification (DEV ONLY)")
+        print("CRITICAL: CLERK_WEBHOOK_SECRET not set. Cannot verify webhook.")
+        raise HTTPException(status_code=500, detail="Server misconfiguration: Webhook secret missing")
 
     payload = await request.body()
 
-    if CLERK_WEBHOOK_SECRET:
-        if not x_svix_signature or not x_svix_id or not x_svix_timestamp:
-            raise HTTPException(status_code=400, detail="Missing svix headers")
+    if not x_svix_signature or not x_svix_id or not x_svix_timestamp:
+        raise HTTPException(status_code=400, detail="Missing svix headers")
 
-        wh = Webhook(CLERK_WEBHOOK_SECRET)
-        try:
-            evt = wh.verify(payload, {
-                "svix-id": x_svix_id,
-                "svix-signature": x_svix_signature,
-                "svix-timestamp": x_svix_timestamp,
-            })
-        except WebhookVerificationError:
-            raise HTTPException(status_code=400, detail="Invalid signature")
-    else:
-        evt = json.loads(payload)
+    wh = Webhook(CLERK_WEBHOOK_SECRET)
+    try:
+        evt = wh.verify(payload, {
+            "svix-id": x_svix_id,
+            "svix-signature": x_svix_signature,
+            "svix-timestamp": x_svix_timestamp,
+        })
+    except WebhookVerificationError:
+        raise HTTPException(status_code=400, detail="Invalid signature")
 
     data = evt.get("data")
     event_type = evt.get("type")
