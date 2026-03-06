@@ -36,10 +36,11 @@ def get_real_ip(request: Request) -> str:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Ensure prisma client is generated on Render boot
-    try:
-        subprocess.run(["prisma", "generate"], check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Warning: Prisma generation failed during startup: {e}")
+    if os.environ.get("RENDER"):
+        try:
+            subprocess.run(["prisma", "generate"], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Warning: Prisma generation failed during startup: {e}")
 
     # Connect to the database on startup
     await db.connect()
