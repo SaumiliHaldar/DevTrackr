@@ -118,7 +118,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
       {/* Mobile Header */}
       <div className="md:hidden sticky top-0 z-40 bg-white border-b border-black/8 px-4 h-14 flex items-center justify-between shrink-0">
-        <NavLink to="/dashboard" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+        <NavLink to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
           <div className="w-5 h-5 bg-black text-white flex items-center justify-center font-black text-xs">D</div>
           <span className="text-sm font-black uppercase tracking-tight">DevTrackr</span>
         </NavLink>

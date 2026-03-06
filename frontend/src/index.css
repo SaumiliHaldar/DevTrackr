@@ -156,6 +156,23 @@
   outline-offset: 2px;
 }
 
+/* Remove focus outlines from Recharts components to prevent borders on click */
+.recharts-wrapper,
+.recharts-surface,
+.recharts-pie-sector,
+.recharts-sector,
+.recharts-curve,
+.recharts-dot {
+  outline: none ;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.recharts-wrapper:focus,
+.recharts-surface:focus,
+.recharts-pie-sector:focus {
+  outline: none ;
+}
+
 /* Selection */
 ::selection {
   background: rgba(0, 0, 0, 0.1);
