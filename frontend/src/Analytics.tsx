@@ -108,17 +108,16 @@ const Analytics: React.FC<AnalyticsProps> = ({ activityData, insight, isGenerati
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Last 30 days</span>
-              <span className="text-xs font-bold bg-black text-white px-2 py-0.5 uppercase tracking-wider">Live</span>
             </div>
           </div>
           
           {/* Chart area */}
-          <div className="relative h-56 sm:h-72 md:h-80 flex items-end pl-10 pr-2">
+          <div className="relative h-56 sm:h-72 md:h-80 flex items-end pl-14 pr-2">
             {/* Y-Axis Labels & Grid Lines */}
-            <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pl-10">
+            <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pl-14">
               {[...yAxisTicks].reverse().map((tick, i) => (
                 <div key={i} className="w-full flex items-center gap-3 -mt-px">
-                  <span className="text-xs font-bold text-muted-foreground w-8 text-right tabular-nums -ml-8 shrink-0">{tick}</span>
+                  <span className="text-xs font-bold text-muted-foreground w-10 text-right tabular-nums -ml-12 shrink-0">{tick}</span>
                   <div className="flex-1 border-t border-black/6" />
                 </div>
               ))}
@@ -164,7 +163,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ activityData, insight, isGenerati
           </div>
 
           {/* X-Axis Labels */}
-          <div className="flex justify-between mt-6 relative z-10 pl-10 pr-2">
+          <div className="flex justify-between mt-6 relative z-10 pl-14 pr-2">
             {xAxisLabels.map((label, i) => (
               <div key={i} className={`flex flex-col items-center gap-1.5 ${label.hideOnMobile ? 'hidden sm:flex' : 'flex'}`}>
                 <div className="w-px h-2 bg-black/15" />

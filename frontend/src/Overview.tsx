@@ -245,8 +245,41 @@ const Overview: React.FC<OverviewProps> = ({ stats, repos, isSyncing, isLoading 
               <span className="text-xs uppercase tracking-widest font-bold text-muted-foreground">Tech Stack</span>
               <span className="text-xs text-muted-foreground font-medium">{languageData.length} languages</span>
             </div>
-            <div className="flex-1 min-h-[13rem] relative">
-              {languageData.length > 0 ? (
+            <div className="flex-1 min-h-[13rem] relative flex items-center justify-center">
+              {isLoading ? (
+                <div className="w-full h-full relative flex items-center justify-center">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: 's1', value: 40 },
+                          { name: 's2', value: 25 },
+                          { name: 's3', value: 35 }
+                        ]}
+                        innerRadius={48}
+                        outerRadius={70}
+                        paddingAngle={4}
+                        dataKey="value"
+                        stroke="none"
+                        animationDuration={1000}
+                      >
+                        {[0, 1, 2].map((i) => (
+                          <Cell key={`cell-${i}`} fill="#f5f5f5" />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <motion.div 
+                    animate={{ opacity: [0.3, 0.6, 0.3] }}
+                    transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                    className="absolute inset-0 pointer-events-none"
+                  >
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="w-[140px] h-[140px] rounded-full border-[22px] border-black/[0.03]" />
+                    </div>
+                  </motion.div>
+                </div>
+              ) : languageData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -279,13 +312,29 @@ const Overview: React.FC<OverviewProps> = ({ stats, repos, isSyncing, isLoading 
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-                  <div className="w-16 h-16 border-2 border-dashed border-black/15 rounded-full" />
-                  <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">No data yet</p>
+                <div className="flex flex-col items-center justify-center text-center p-4">
+                  <div className="w-12 h-12 bg-black/5 flex items-center justify-center mb-4 rounded-full">
+                    <svg className="w-6 h-6 text-black/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2" />
+                    </svg>
+                  </div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-black mb-1">No Data Detected</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium leading-relaxed">
+                    Sync with GitHub to identify your tech stack distribution
+                  </p>
                 </div>
               )}
             </div>
-            {languageData.length > 0 && (
+            {isLoading ? (
+              <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1.5">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 bg-black/5 shrink-0 animate-pulse" />
+                    <div className="h-2.5 w-12 bg-black/5 rounded animate-pulse" />
+                  </div>
+                ))}
+              </div>
+            ) : languageData.length > 0 ? (
               <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1.5">
                 {languageData.slice(0, 4).map((lang, i) => (
                   <div key={lang.name} className="flex items-center gap-1.5">
@@ -294,7 +343,7 @@ const Overview: React.FC<OverviewProps> = ({ stats, repos, isSyncing, isLoading 
                   </div>
                 ))}
               </div>
-            )}
+            ) : null}
           </motion.div>
         </div>
       </div>
