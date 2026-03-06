@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 from typing import Optional
 import httpx
+import subprocess
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,8 +32,15 @@ def get_real_ip(request: Request) -> str:
         return forwarded_for.split(",")[0].strip()
     return get_remote_address(request)
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Ensure prisma client is generated on Render boot
+    try:
+        subprocess.run(["prisma", "generate"], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Warning: Prisma generation failed during startup: {e}")
+
     # Connect to the database on startup
     await db.connect()
     # Initialize cache backend
