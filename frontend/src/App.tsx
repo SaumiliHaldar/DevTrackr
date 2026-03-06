@@ -50,8 +50,6 @@ const LandingPage: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
             <motion.div 
-              whileHover={{ rotate: 90 }}
-              transition={{ duration: 0.2 }}
               className="w-6 h-6 bg-black text-white flex items-center justify-center font-black text-xs shrink-0"
             >
               D
