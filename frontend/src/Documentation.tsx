@@ -5,6 +5,15 @@ import { Link } from 'react-router-dom';
 const Documentation: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
+  React.useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && ['overview', 'features', 'ai', 'security'].includes(hash)) {
+      setActiveTab(hash);
+      // Optional: scroll to top since it's a new "page" view
+      window.scrollTo(0, 0);
+    }
+  }, []);
+
   const sections = [
     {
       id: 'overview',

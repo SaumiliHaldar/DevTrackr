@@ -152,7 +152,7 @@ const LandingPage: React.FC = () => {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="px-5 sm:px-8 max-w-6xl mx-auto pt-20 pb-24 md:pt-28 md:pb-32"
+          className="px-5 sm:px-8 max-w-6xl mx-auto pt-12 pb-16 md:pt-16 md:pb-20"
         >
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <motion.div variants={itemVariants} className="flex flex-col items-center lg:items-start text-center lg:text-left">
@@ -212,7 +212,7 @@ const LandingPage: React.FC = () => {
 
         {/* Stats Bar */}
         <section className="border-y border-black/8 bg-zinc-50">
-          <div className="max-w-6xl mx-auto px-5 sm:px-8 py-6">
+          <div className="max-w-6xl mx-auto px-5 sm:px-8 py-4">
             <div className="flex flex-col sm:flex-row items-center justify-around gap-6 sm:gap-0">
               {[
                 { label: 'Repositories Tracked', value: '10K+' },
@@ -237,29 +237,160 @@ const LandingPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Value Prop Section */}
-        <section className="py-20 md:py-28 px-5 sm:px-8 max-w-6xl mx-auto border-t border-black/8">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-             <div>
-                <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tight mb-6">Built for Engineers.</h2>
-                <p className="text-base text-muted-foreground leading-relaxed mb-8">
-                   DevTrackr strips away the noise. We provides a high-fidelity window into your technical velocity, 
-                   language distribution, and project impact without complexity or source-code persistence.
+        {/* Features Section */}
+        <section id="features" className="py-16 md:py-20 px-5 sm:px-8 max-w-6xl mx-auto scroll-mt-16">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8 md:mb-12"
+          >
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-black/30 mb-3">Capabilities</p>
+              <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none">Core Infrastructure</h2>
+            </div>
+            <Link to="/documentation#features" className="text-[10px] font-black uppercase tracking-widest border border-black px-6 py-3 hover:bg-black hover:text-white transition-all shrink-0">
+              Explore Feature engine →
+            </Link>
+          </motion.div>
+          <div className="grid md:grid-cols-3 border border-black/10">
+            {[
+              { id: '01', title: 'Privacy', head: 'Sovereignty', desc: 'Your code never touches our servers. We only ingest transient metadata, ensuring your intellectual property remains yours.' },
+              { id: '02', title: 'Analytics', head: 'Productivity', desc: 'Deterministic scoring algorithms with zero fluff. Pure performance data and velocity metrics for serious engineers.' },
+              { id: '03', title: 'Intelligence', head: 'Tech Stack', desc: 'Deep analysis of your technological footprint across ecosystems — language usage, framework distribution, and more.' }
+            ].map((f, i) => (
+              <motion.div 
+                key={f.id}
+                whileHover={{ backgroundColor: '#fafafa' }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className={`p-8 md:p-10 group ${i < 2 ? 'border-b md:border-b-0 md:border-r border-black/10' : ''}`}
+              >
+                <span className="text-xs text-black/35 tracking-widest font-bold block mb-8 uppercase">{f.id}. {f.title}</span>
+                <h3 className="text-xl font-black uppercase tracking-tight mb-4 group-hover:translate-x-1 transition-transform">{f.head}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {f.desc}
                 </p>
-                <Link to="/documentation" className="text-xs font-black uppercase tracking-widest border-b-2 border-black pb-1 hover:opacity-60 transition-opacity">
-                   Explore the Core Engine Docs →
-                </Link>
-             </div>
-             <div className="bg-zinc-50 border border-black/10 p-10 flex items-center justify-center">
-                <div className="w-12 h-12 bg-black flex items-center justify-center text-white font-black text-xl">D</div>
-             </div>
+              </motion.div>
+            ))}
           </div>
+        </section>
+
+        {/* AI Insights Section */}
+        <section id="aiinsights" className="py-16 md:py-20 px-5 sm:px-8 max-w-6xl mx-auto border-t border-black/8 scroll-mt-16">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8 md:mb-12"
+          >
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.2em] font-black text-black/30 mb-3">Intelligence</p>
+              <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none">AI Insights</h2>
+            </div>
+            <Link to="/documentation#ai" className="text-[10px] font-black uppercase tracking-widest border border-black px-6 py-3 hover:bg-black hover:text-white transition-all shrink-0">
+              View AI Documentation →
+            </Link>
+          </motion.div>
+          <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tight leading-tight">Deep Codebase <br className="hidden md:block" /> Analysis</h3>
+              <p className="text-base text-muted-foreground leading-relaxed">
+                Our advanced AI engine processes your commit history, language distribution, and PR merge rates to generate personalized insights. Identify bottlenecks, discover your strongest technologies, and optimize your productivity.
+              </p>
+              <ul className="space-y-4">
+                {[
+                  'Automated pattern recognition',
+                  'Actionable performance feedback',
+                  'Tech stack proficiency scoring'
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <div className="w-1.5 h-1.5 bg-black" />
+                    <span className="text-sm font-bold uppercase tracking-widest">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="bg-black text-white p-8 md:p-12 relative overflow-hidden"
+            >
+               <div className="relative z-10">
+                 <div className="flex items-center gap-2 mb-6">
+                   <div className="w-2 h-2 bg-white rounded-full" />
+                   <h4 className="text-xs font-black tracking-widest uppercase text-white">Live Insight Example</h4>
+                 </div>
+                 <p className="text-sm leading-relaxed text-white/85">
+                   "Based on your recent activity, your productivity in TypeScript has increased by 40%. Consider mentoring junior developers in React patterns, as your PR merge rate is exceptionally high in this area."
+                 </p>
+               </div>
+               <motion.div 
+                 animate={{ rotate: 360 }}
+                 transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+                 className="absolute -bottom-10 -right-10 w-32 h-32 border-2 border-white/10 rounded-full pointer-events-none"
+               />
+            </motion.div>
+          </div>
+        </section>
+
+
+        {/* CTA Section */}
+        <section className="py-16 md:py-20 px-5 sm:px-8 max-w-6xl mx-auto text-center border-t border-black/8">
+          <motion.p 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-xs uppercase tracking-widest font-bold text-muted-foreground mb-4"
+          >
+            Get Started
+          </motion.p>
+          <motion.h2 
+            initial={{ scale: 0.95, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-8"
+          >
+            Ready to Analyze?
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-base text-muted-foreground mb-10 max-w-sm mx-auto leading-relaxed"
+          >
+            Connect your GitHub account and get instant insights into your development patterns.
+          </motion.p>
+          <SignedOut>
+            <SignInButton mode="modal">
+              <motion.button 
+                whileHover={{ scale: 1.04, boxShadow: "0 16px 36px rgba(0,0,0,0.12)" }}
+                whileTap={{ scale: 0.97 }}
+                className="px-10 py-4 bg-black text-white font-black uppercase text-xs tracking-widest transition-all"
+              >
+                Initialize Core Engine
+              </motion.button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <Link to="/dashboard" className="inline-block px-10 py-4 bg-black text-white font-black uppercase text-xs tracking-widest hover:bg-black/90 transition-all">
+              Access Dashboard
+            </Link>
+          </SignedIn>
         </section>
       </main>
 
       {/* Footer */}
       <footer className="border-t border-black/8 bg-white">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-8 grid grid-cols-1 md:grid-cols-3 items-center gap-6">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-6 grid grid-cols-1 md:grid-cols-3 items-center gap-6">
           {/* Logo — left */}
           <Link to="/" className="flex items-center gap-2.5 justify-center md:justify-start hover:opacity-80 transition-opacity">
             <div className="w-5 h-5 bg-black text-white flex items-center justify-center font-black text-xs shrink-0">D</div>
