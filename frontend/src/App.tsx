@@ -241,7 +241,7 @@ const LandingPage: React.FC = () => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8 md:mb-12"
+            className="flex flex-col md:flex-row justify-between items-center md:items-end gap-6 mb-8 md:mb-12 text-center md:text-left"
           >
             <div>
               <p className="text-[10px] uppercase tracking-[0.2em] font-black text-black/30 mb-3">Capabilities</p>
@@ -282,7 +282,7 @@ const LandingPage: React.FC = () => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8 md:mb-12"
+            className="flex flex-col md:flex-row justify-between items-center md:items-end gap-6 mb-8 md:mb-12 text-center md:text-left"
           >
             <div>
               <p className="text-[10px] uppercase tracking-[0.2em] font-black text-black/30 mb-3">Intelligence</p>
@@ -297,7 +297,7 @@ const LandingPage: React.FC = () => {
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="space-y-6"
+              className="space-y-6 flex flex-col items-center md:items-start text-center md:text-left"
             >
               <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tight leading-tight">Deep Codebase <br className="hidden md:block" /> Analysis</h3>
               <p className="text-base text-muted-foreground leading-relaxed">

@@ -17,11 +17,13 @@ const NAV_LINKS = [
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const { user } = useUser();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => 
+    typeof window !== 'undefined' ? window.matchMedia('(max-width: 767px)').matches : false
+  );
 
   useEffect(() => {
     const mql = window.matchMedia('(max-width: 767px)');
-    setIsMobile(mql.matches);
+    // Initial check is now handled in useState, but we still need the listener
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     mql.addEventListener('change', handler);
     return () => mql.removeEventListener('change', handler);
